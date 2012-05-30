@@ -7,15 +7,12 @@ Extracts data from Anametrix API into R data structure
 Function getAxDataset extracts data from Anametrix API and returns R data frame
 }
 \usage{
-getAxDataset(axapiUri, authtoken, reportSuiteId, tableConfigurationXML, columns, datestart, 
-dateend, count)
+getAxDataset(auth, reportSuiteId, tableConfigurationXML, columns, datestart, 
+dateend, count, verbose)
 }
 \arguments{
-  \item{axapiUri}{
-Anametrix API Endpoint URI.
-}
-  \item{authtoken}{
-Authentication Token returned from Anametrix API to provide secure access. Use getToken(axapiUri, username, password) to get it.
+ \item{auth}{
+Authentication instance. 
 }
   \item{reportSuiteId}{
 Data Suite ID. Contact your product manager for assistance. 
@@ -35,9 +32,12 @@ End date of the request. Use YYYY-MM-DD format. Example: "2012-03-31"
   \item{count}{
 Number of rows requested. Example: "1000"
 }
+ \item{verbose}{
+Specifies whether to print out notifications etc. Example: FALSE
+}
 }
 \value{
-\item{D}{R Data frame}
+\item{D}{R Data frame containing data}
 }
 \format{R Data frame containing number of observations requested from Anametrix API}
 \references{
@@ -49,14 +49,14 @@ Author, Roman Jugai
 
 \examples{
 #Example: Extracting 3 columns from Browsers table from Anametrix API
-axapiUri = "https://demo.anametrix.com/api"
+
 username = "demo.user@demoanametrix.com"
 password = "demo.user"
-authtoken <- getToken(axapiUri, username, password)
-table <- getTableConfiguration(axapiUri, authtoken, username, password, 10385, "Browsers")
+auth <- authenticate("https://demo.anametrix.com/api", username, password)
+table <- getTableConfiguration(auth, 10385, "Browsers")
 printTable(table)
-axdata <- getAxDataset(axapiUri, authtoken, 10385, table, c("name","visits","page_views"), 
-"2012-03-01", "2012-04-30", '500')
+axdata <- getAxDataset(auth, 10385, table, c("name","visits","page_views"), "2012-03-01", "2012-04-30", 
+100, TRUE)
 head(axdata)
 }
 \keyword{connection}

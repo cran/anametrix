@@ -1,11 +1,13 @@
 \name{anametrix-package}
 \alias{anametrix-package}
 \alias{anametrix}
-\alias{getToken}
 \alias{getFullTableListXML}
 \alias{getTableConfiguration}
 \alias{printTable}
 \alias{constructQueryXML}
+\alias{queryReader}
+\alias{getColumnTypeId}
+\alias{authenticate}
 \docType{package}
 \title{
 Connects to Anametrix API
@@ -17,7 +19,7 @@ Provides function(s) to extract data from Anametrix API into R data structures.
 \tabular{ll}{
 Package: \tab anametrix\cr
 Type: \tab Package\cr
-Version: \tab 0.1\cr
+Version: \tab 0.2\cr
 Date: \tab 2012-05-29\cr
 License: \tab LGPL\cr
 }
