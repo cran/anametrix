@@ -1,5 +1,7 @@
-4c61e1ec524741d872c3ba43a4e618c1 *DESCRIPTION
+1675c4204864fbfe1b6f2103852f38e2 *DESCRIPTION
 df390c53434517b304ac5db487184641 *NAMESPACE
-b4d438cbd0083bbe7246b1e3d97f07f5 *R/getAxDataset.R
-964383962facaf9e13a5bb90d47f89a2 *man/anametrix-package.Rd
-90f2bc0493b924e1ed89cc74feb807e1 *man/getAxDataset.Rd
+0131909cd85d664ae4f89f58b24056bd *R/getAxDataset.R
+2e41e33c4179b80a0832c5b6d28c69cd *R/uploadData.R
+6d0ac38df003066aa825942c267b0d3e *man/anametrix-package.Rd
+b5966ceae25888832a3ef61de82a59d0 *man/getAxDataset.Rd
+33061349c472d6dfbd78a8b47cc04092 *man/uploadData.Rd

@@ -1,5 +1,13 @@
 \name{getAxDataset}
 \alias{getAxDataset}
+\alias{authenticate}
+\alias{getFullTableListXML}
+\alias{getTableConfiguration}
+\alias{printTable}
+\alias{constructQueryXML}
+\alias{queryReader}
+\alias{getColumnTypeId}
+\alias{isdefined}
 \title{
 Extracts data from Anametrix API into R data structure
 }
@@ -18,10 +26,11 @@ Authentication instance.
 Data Suite ID. Contact your product manager for assistance. 
 }
   \item{tableConfigurationXML}{
-Configuration of a table in XML format. Use getTableConfiguration(axapiUri, username, password, reportsuiteId, tableName, authtoken) to get it.
+Configuration of a table in XML format. Use getTableConfiguration(auth, reportsuiteId, tableName) to get it.
 }
   \item{columns}{
-Vector of column names for the request. Use printTable(tableConfigurationXML) to see all column names. Example: c("city","country","male_population","female_population")
+Array of column names for the request. Example: c("city","country","male_population")
+Use printTable(tableConfigurationXML) to see all column names.
 }
   \item{datestart}{
 Start date of the request. Use YYYY-MM-DD format. Example: "2012-03-31"
