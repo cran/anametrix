@@ -13,8 +13,8 @@ Provides function(s) to upload data from R into Anametrix table(s).
 \tabular{ll}{
 Package: \tab anametrix\cr
 Type: \tab Package\cr
-Version: \tab 1.3\cr
-Date: \tab 2012-07-02\cr
+Version: \tab 1.4\cr
+Date: \tab 2012-07-20\cr
 License: \tab LGPL\cr
 }
 In R install package: install.package("anametrix"). Load package: library("anametrix")

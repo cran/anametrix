@@ -4,56 +4,56 @@ library(RCurl)
 library(XML)
 
 getAxDataset <-
-function(auth, reportSuiteId, tableConfigurationXML, columns, datestart, dateend, count, verbose) {
-  if(is.null(auth$axapiUri) || as.character(auth$axapiUri) == "") {	
-    cat("You need to specify API Endpoint URL first: newAuthentication <- authenticate(apiURL,username,password)","\n") 
-    return(NULL)
-  }
-  if(as.character(auth$authtoken) == "" || is.null(auth$authtoken))	{	
-    cat("You need to get Authentication Token first: newAuthentication <- authenticate(apiURL,username,password)","\n") 
-    return(NULL)
-  }
-  if(verbose)	{	options(warn=-1)	}
-  else		{	options(warn=-1)	}
-  
-  count <- formatC(count, format = "f", digits = 0)
-  queryXML <- constructQueryXML(auth, reportSuiteId, tableConfigurationXML, columns, datestart, dateend, count)
-  queryXMLreq <- paste (sep="", 'cmd=', toString.XMLNode(queryXML));
-  
-  h = getCurlHandle()
-  reader = queryReader(columns, verbose)
-  
-  tryCatch({
+  function(auth, reportSuiteId, tableConfigurationXML, columns, datestart, dateend, count, verbose) {
+    if(is.null(auth$axapiUri) || as.character(auth$axapiUri) == "") {  
+      cat("You need to specify API Endpoint URL first: newAuthentication <- authenticate(apiURL,username,password)","\n") 
+      return(NULL)
+    }
+    if(as.character(auth$authtoken) == "" || is.null(auth$authtoken))  {	
+      cat("You need to get Authentication Token first: newAuthentication <- authenticate(apiURL,username,password)","\n") 
+      return(NULL)
+    }
+    #if(verbose)	{	options(warn=1)	}
+    #else		{	options(warn=-1)	}
     
-    getURL(auth$axapiUri, ssl.verifypeer = FALSE, followLocation = TRUE, postfields=queryXMLreq, encoding="UTF-8", curl=h,
-           .opts = list(timeout = 1600, verbose = FALSE),  useragent = "R",
-           write=chunkToLineReader(reader$read)$read, verbose = FALSE)
-  }, error=function(err) {
-    cat("Error occured when retrieving data:", conditionMessage(err), "\n")
+    count <- formatC(count, format = "f", digits = 0)
+    queryXML <- constructQueryXML(auth, reportSuiteId, tableConfigurationXML, columns, datestart, dateend, count)
+    queryXMLreq <- paste (sep="", 'cmd=', toString.XMLNode(queryXML));
+    
+    h = getCurlHandle()
+    reader = queryReader(columns, verbose)
+    
+    tryCatch({
+      
+      getURL(auth$axapiUri, ssl.verifypeer = FALSE, followLocation = TRUE, postfields=queryXMLreq, encoding="UTF-8", curl=h,
+             .opts = list(timeout = 3600, verbose = FALSE),  useragent = "R",
+             write=chunkToLineReader(reader$read)$read, verbose = FALSE)
+    }, error=function(err) {
+      cat("Error occured when retrieving data:", conditionMessage(err), "\n")
+      close(reader$fileCon())
+      file.remove(reader$filename())
+      return(NULL)
+    })
+    
+    if(verbose)	print("Got response from Anametrix server...")
+    
+    #print(reader$filename())
     close(reader$fileCon())
+    
+    if(file.info(reader$filename())$size > 0) {
+      DF <- read.table(reader$filename(), sep = ",", header=T)
+    }else {
+      cat("Error occured when retrieving data:", "Make sure you specified correct columns, table and Data suite", "\n")
+      #close(reader$fileCon())
+      file.remove(reader$filename())
+      return(NULL)
+    }
+    
     file.remove(reader$filename())
-    return(NULL)
-  })
-  
-  if(verbose)	print("Got response from Anametrix server...")
-  
-  #print(reader$filename())
-  close(reader$fileCon())
-  
-  if(file.info(reader$filename())$size > 0) {
-    DF <- read.table(reader$filename(), sep = ",", header=T)
-  }else {
-    cat("Error occured when retrieving data:", "Make sure you specified correct columns, table and Data suite", "\n")
-    #close(reader$fileCon())
-    file.remove(reader$filename())
-    return(NULL)
+    rm(reader)
+    
+    DF	
   }
-  
-  file.remove(reader$filename())
-  rm(reader)
-  
-  DF	
-}
 
 #Region authentication
 authenticate <- function(axapiUri, username, password)  {
@@ -201,10 +201,10 @@ constructQueryXML <- function(auth, reportSuiteId, tableConfigurationXML, column
                                       'columnName'=toString(columnName)), parent=columnsXML)
     }
   }
-
+  
   sortOrder <- newXMLNode("sortOrder", parent=query)
   sortOrderColumn <- newXMLNode("column", attrs = c(	'name'='m_1', 
-                                                      'order'='DESC'), parent=sortOrder)
+                                                     'order'='DESC'), parent=sortOrder)
   
   return(root)
 }
@@ -213,7 +213,7 @@ queryReader=
   function(columns, verbose) {
     #Function that appends the values to the centrally stored vector
     i = 1
-    
+    batchsize = 1
     needToStore <- FALSE
     #d <- data.frame(matrix(nrow=1, ncol=length(columns)))
     
@@ -223,8 +223,8 @@ queryReader=
     read = function(chunk) {
       con = textConnection(chunk)
       on.exit(close(con))
-      
-      while (length(oneLine <- readLines(con, n = 1, warn = FALSE)) > 0) {
+      #print(as.character(chunk))
+      while (length(oneLine <- readLines(con, n = batchsize, warn = TRUE, ok = TRUE)) > 0) {
         if(needToStore) {
           tryCatch({
             c <- textConnection(oneLine)
@@ -233,12 +233,10 @@ queryReader=
             if(ncol(tempDF) == length(columns)) {
               if(i == 1) {
                 names(tempDF) = columns
-                write.table(tempDF, file=fileCon, sep = ",", col.names = TRUE, row.names=FALSE, 
-                            qmethod = "double")
+                write.table(tempDF, file=fileCon, sep = ",", col.names = TRUE, row.names=FALSE, qmethod = "double")
               }
               else {
-                write.table(tempDF, file=fileCon, sep = ",", col.names = FALSE, row.names=FALSE, 
-                            qmethod = "double")
+                write.table(tempDF, file=fileCon, sep = ",", col.names = FALSE, row.names=FALSE,qmethod = "double")
               }
               
               i <<- i + 1
@@ -247,15 +245,15 @@ queryReader=
             close(c)
           }, error=function(err) {
             if(verbose) {
-              cat("err:", conditionMessage(err), "\n")
-              cat("corrupted line:", oneLine, "\n")
+              cat("Error when parsing line:", conditionMessage(err), "\n")
+              cat("Corrupted line:", oneLine, "\n")
               cat("\n")
             }   
           })
         }
-        #print(as.character(chunk))
-        if(as.character(oneLine) == '</result>')	{
+        else if(as.character(oneLine) == '</result>')	{
           needToStore <<- TRUE
+          batchsize <<- 200
         }
       }
     }
@@ -267,7 +265,7 @@ queryReader=
 
 #End Region Query
 
-  
+
 #Region Support functions
 isdefined <- function(object) {
   exists(as.character(substitute(object)))
@@ -286,4 +284,3 @@ printTable <- function(tableConfigurationXML) {
   rm(i,name,columnName)
 }
 #End Region Support functions
-
