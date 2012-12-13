@@ -9,7 +9,7 @@ Uploads data into Anametrix from R data structure
 Function uploadData uploads data from R data.frame into Anametrix table
 }
 \usage{
-uploadData(auth, reportSuiteId, tableConfigurationXML, dataframe, columns, tag, truncation)
+uploadData(auth, reportSuiteId, tableObject, dataframe, columns, tag, truncation)
 }
 \arguments{
   \item{auth}{
@@ -18,15 +18,15 @@ Authentication instance.
   \item{reportSuiteId}{
 Data Suite ID. Contact your product manager for assistance.
 }
-  \item{tableConfigurationXML}{
-Configuration of a table in XML format. Use getTableConfiguration(auth, reportsuiteId, tableName) to get it.
+  \item{tableObject}{
+Configuration of a table. Use getTableConfiguration(auth, reportsuiteId, tableName) to get it.
 }
   \item{dataframe}{
 R Data frame containing data that needs to be uploaded
 }
   \item{columns}{
 Array of column names that need to be uploaded. Example: c("city","country","male_population")
-Use printTable(tableConfigurationXML) to see all column names.
+Use printTable(tableObject) to see all column names.
 }
   \item{tag}{
 Tag of the upload.

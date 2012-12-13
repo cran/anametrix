@@ -4,9 +4,9 @@ library(RCurl)
 library(XML)
 
 uploadData <-
-function(auth, reportSuiteId, tableConfigurationXML, dataframe, columns, tag, truncation) {
+function(auth, reportSuiteId, tableObject, dataframe, columns, tag, truncation) {
   
-  uploadXML <- constructUploadXML(auth, reportSuiteId, tableConfigurationXML, dataframe, columns, tag, truncation)
+  uploadXML <- constructUploadXML(auth, reportSuiteId, tableObject, dataframe, columns, tag, truncation)
   if(is.null(uploadXML)) {
     cat("Unable to upload data.","\n")
     return(NULL)
@@ -38,7 +38,7 @@ rowToXML <- function(ds, columns, header) {
   node
 }
 
-constructUploadXML <-  function(auth, reportSuiteId, tableConfigurationXML, dataframe, columns, tag, truncation) {
+constructUploadXML <-  function(auth, reportSuiteId, tableObject, dataframe, columns, tag, truncation) {
   escapedToken <- curlEscape(auth$authtoken)
   
   root <- newXMLNode("uploadData", attrs = c('token' = toString(escapedToken)), namespaceDefinitions = 'http://api.anametrix.com/api-envelope.xsd')
@@ -48,11 +48,11 @@ constructUploadXML <-  function(auth, reportSuiteId, tableConfigurationXML, data
   if(!is.null(tag))  newXMLNode("tag", tag , parent=properties)
 	currentDate <- format(Sys.time(), "%Y-%m-%d")
   newXMLNode("date", currentDate , parent=properties)
-  if(is.null(tableConfigurationXML) || as.character(tableConfigurationXML) == ""){
+  if(is.null(tableObject$tableXML) || as.character(tableObject$tableXML) == ""){
     cat("Unable to upload data. Table not specified.","\n")
     return(NULL)
   }
-  newXMLNode("table", xmlAttrs(tableConfigurationXML)["tableName"], parent=properties)
+  newXMLNode("table", xmlAttrs(tableObject$tableXML)["tableName"], parent=properties)
   if(!is.null(truncation)) 
     newXMLNode("truncation", truncation , parent=properties)
   else    

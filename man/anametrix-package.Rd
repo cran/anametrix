@@ -3,7 +3,7 @@
 \alias{anametrix}
 \docType{package}
 \title{
-Connects to Anametrix API
+Bidirectional connector to Anametrix API
 }
 \description{
 Provides function(s) to extract data from Anametrix API into R data structure(s).
@@ -13,8 +13,8 @@ Provides function(s) to upload data from R into Anametrix table(s).
 \tabular{ll}{
 Package: \tab anametrix\cr
 Type: \tab Package\cr
-Version: \tab 1.4\cr
-Date: \tab 2012-07-20\cr
+Version: \tab 1.5\cr
+Date: \tab 2012-12-13\cr
 License: \tab LGPL\cr
 }
 In R install package: install.package("anametrix"). Load package: library("anametrix")

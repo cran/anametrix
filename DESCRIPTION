@@ -1,13 +1,13 @@
 Package: anametrix
 Type: Package
-Title: Connects to Anametrix
-Version: 1.4
-Date: 2012-07-20
+Title: Bidirectional connector to Anametrix API
+Version: 1.5
+Date: 2012-12-13
 Author: Roman Jugai
 Maintainer: Roman Jugai <roman@anametrix.com>
 Depends: R (>= 1.8.0), RCurl, XML
-Description: Bidirectional connector to Anametrix API.
+Description: Bidirectional connector to Anametrix API
 License: LGPL
-Packaged: 2012-07-21 01:57:37 UTC; roman
+Packaged: 2012-12-14 03:17:41 UTC; Spare2
 Repository: CRAN
-Date/Publication: 2012-07-21 04:39:39
+Date/Publication: 2012-12-14 08:55:04
