@@ -5,6 +5,8 @@
 \alias{getTableConfiguration}
 \alias{constructQueryXML}
 \alias{queryReader}
+\alias{getDBDateFormat}
+\alias{randomAlphaNumericUID}
 \alias{getColumnTypeId}
 \alias{isdefined}
 \title{
@@ -72,8 +74,8 @@ password = "demo.user"
 auth <- authenticate("https://demo.anametrix.com/api", username, password)
 table <- getTableConfiguration(auth, 10385, "Browsers")
 printTable(table)
-axdata <- getAxDataset(auth, 10385, table, c("name","visits","page_views"), "2012-03-01", "2012-04-30", 
-100, "month", "visits", "asc", TRUE)
+axdata <- getAxDataset(auth, 10385, table, c("name","visits","page_views"), "2012-03-01", 
+"2012-04-30", 100, "month", "visits", "asc", TRUE)
 head(axdata)
 }
 \keyword{connection}

@@ -14,9 +14,5 @@ printTable(tableObject)
 Configuration of a table. Use getTableConfiguration(auth, reportsuiteId, tableName) to get it.
 }
 }
-\author{
-Author, Roman Jugai
-}
-
 \keyword{connection}
 \keyword{database}

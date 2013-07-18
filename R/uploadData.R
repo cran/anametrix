@@ -26,18 +26,6 @@ function(auth, reportSuiteId, tableObject, dataframe, columns, tag, truncation) 
   cat("Upload Successful...","\n")
 }
 
-rowToXML <- function(ds, columns, header) {
-  node <- newXMLNode("row")
-  
-  for (columnName in columns) {
-    col <- grep(columnName, header)
-    value <- sub("^ +", "", ds[col]) #trim leading white space
-    xmlAttrs(node)[columnName] = value
-  }
-  rm(col,value)
-  node
-}
-
 constructUploadXML <-  function(auth, reportSuiteId, tableObject, dataframe, columns, tag, truncation) {
   escapedToken <- curlEscape(auth$authtoken)
   
@@ -53,18 +41,17 @@ constructUploadXML <-  function(auth, reportSuiteId, tableObject, dataframe, col
     return(NULL)
   }
   newXMLNode("table", xmlAttrs(tableObject$tableXML)["tableName"], parent=properties)
-  if(!is.null(truncation)) 
+  if(!is.null(truncation)) {
     newXMLNode("truncation", truncation , parent=properties)
-  else    
+  }
+  else {
     newXMLNode("truncation", "FALSE" , parent=properties)
-  
+  }
   level1 <- newXMLNode("data", parent = root)
-  rowsparent <- newXMLNode("data", namespaceDefinitions = toString(" "), parent = level1)
   
-  rows <- apply(dataframe, 1, rowToXML, columns=columns, header=colnames(dataframe))
-  addChildren(rowsparent, rows)
+  rows <- apply(dataframe, MARGIN=1, function(r) newXMLNode("row", attrs=sub("^ +", "",r ))) #trim leading white space
+  rowsparent <- newXMLNode("data", namespaceDefinitions = toString(" "), parent = level1, .children = rows)
   
   rm(rows)
-  
   return(root)
 }

@@ -9,7 +9,8 @@ constructQueryXML <- function(auth, reportSuiteId, tableObject, columns, datesta
   
   root <- newXMLNode("executeQuery", attrs = c('token' = toString(escapedToken)), namespaceDefinitions = 'http://api.anametrix.com/api-envelope.xsd')
   level1 <- newXMLNode("query", parent = root)
-  level2 <- newXMLNode("query", attrs = c('id' ='R-module','resultSetMode'='stream',
+  uid <- paste("R-Module", randomAlphaNumericUID(), sep="-")
+  level2 <- newXMLNode("query", attrs = c('id'=uid,'resultSetMode'='stream',
                                           'resultSetFormat'='csv'), namespaceDefinitions = toString(" "), parent =level1)
   level3 <- newXMLNode("environment", parent =level2)
   dateranges <- newXMLNode("dateRanges", parent =level3)
@@ -26,6 +27,7 @@ constructQueryXML <- function(auth, reportSuiteId, tableObject, columns, datesta
   mIndex=1;
   cIndex=1;
   tableColumnTypeId = 1;
+  dateFormat <- getDBDateFormat(dateFormat)
   returnAsDate = as.character(dateFormat) == 'hour' || as.character(dateFormat) == 'day' || as.character(dateFormat) == 'month' || as.character(dateFormat) == 'year'
   sortColumnInternalName = 'm_1'
   for (columnName in columns) {
@@ -132,5 +134,23 @@ getColumnTypeId <- function(cName, tableObject) {
   rm(columnName)
   return(columnTypeId)
 }
-
 #End Region Getters
+
+#Region Support Methods
+getDBDateFormat <- function(df) {
+  newdatef <-  ifelse(df=='hour',  "yyyy-MM-dd HH:mm:ss",
+               ifelse(df=='day',   "yyyy-MM-dd",
+               ifelse(df=='month', "yyyy-MM-01",
+               ifelse(df=='year',  "yyyy-01-01", df))))
+  return(newdatef)
+}
+
+randomAlphaNumericUID <- function(n=1, length=10) {
+  randomString <- c(1:n)
+  for (i in 1:n) {
+    randomString[i] <- paste(sample(c(0:9, letters, LETTERS), length, replace=TRUE), collapse="")
+  }
+  return( toupper(randomString))
+}
+
+#End Region Support Methods
